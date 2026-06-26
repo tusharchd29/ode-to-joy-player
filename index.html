@@ -3,31 +3,21 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
-  <title>Faded · Tushar</title>
+  <title>Tushar Music</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-    html, body {
-      width:100%; height:100%;
-      overflow:hidden;
-      font-family:'Inter',sans-serif;
-      background:#000;
-    }
+    html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',sans-serif; background:#000; }
 
-    /* Full screen image - no cropping */
+    /* Background image */
     .bg {
-      position:fixed;
-      top:0; left:0;
-      width:100%; height:100%;
-      z-index:0;
+      position:fixed; top:0; left:0; width:100%; height:100%; z-index:0;
+      transition: opacity 0.6s ease;
     }
     .bg img {
       width:100%; height:100%;
-      object-fit:cover;
-      object-position:center top;
-      display:block;
+      object-fit:cover; object-position:center top; display:block;
     }
-
     .bg-overlay {
       position:fixed; inset:0; z-index:1;
       background: linear-gradient(
@@ -39,14 +29,27 @@
       );
     }
 
+    /* Song counter top */
+    .song-counter {
+      position:fixed; top:20px; left:50%; transform:translateX(-50%);
+      z-index:20;
+      display:flex; gap:8px;
+    }
+    .dot {
+      width:8px; height:8px; border-radius:50%;
+      background:rgba(255,255,255,0.35);
+      transition:background 0.3s, transform 0.3s;
+    }
+    .dot.active { background:#fff; transform:scale(1.2); }
+
     /* Bottom panel */
     .bottom {
       position:fixed; bottom:0; left:0; right:0; z-index:10;
       padding:0 24px 44px;
     }
 
-    .song-title { font-size:28px; font-weight:700; color:#fff; letter-spacing:-0.5px; margin-bottom:6px; }
-    .song-row   { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+    .song-title  { font-size:28px; font-weight:700; color:#fff; letter-spacing:-0.5px; margin-bottom:6px; }
+    .song-row    { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
     .avatar {
       width:30px; height:30px; border-radius:50%;
       background:linear-gradient(135deg,#ff6b6b,#ffa500);
@@ -64,8 +67,7 @@
     }
     .prog-fill {
       height:100%; width:0%;
-      background:#fff;
-      border-radius:99px; pointer-events:none;
+      background:#fff; border-radius:99px; pointer-events:none;
     }
     .prog-thumb {
       width:13px; height:13px; border-radius:50%; background:#fff;
@@ -80,14 +82,15 @@
 
     /* Controls */
     .controls {
-      display:flex; align-items:center; justify-content:center; gap:36px;
+      display:flex; align-items:center; justify-content:center; gap:28px;
     }
-    .btn-skip {
+    .btn-ctrl {
       background:none; border:none; cursor:pointer;
-      color:rgba(255,255,255,0.85); padding:6px;
+      color:rgba(255,255,255,0.85); padding:8px;
       -webkit-tap-highlight-color:transparent;
+      transition:opacity 0.15s;
     }
-    .btn-skip:active { opacity:0.4; }
+    .btn-ctrl:active { opacity:0.4; }
     .btn-play {
       width:70px; height:70px; border-radius:50%; border:none;
       background:#fff; cursor:pointer;
@@ -97,17 +100,26 @@
       -webkit-tap-highlight-color:transparent;
     }
     .btn-play:active { transform:scale(0.9); }
+
+    /* Slide transition */
+    .bg.fade-out { opacity:0; }
   </style>
 </head>
 <body>
 
-<div class="bg">
-  <img src="https://raw.githubusercontent.com/tusharchd29/tushar/main/bg.png" alt=""/>
+<div class="bg" id="bgWrap">
+  <img id="bgImg" src="https://raw.githubusercontent.com/tusharchd29/tushar/main/bg.png" alt=""/>
 </div>
 <div class="bg-overlay"></div>
 
+<!-- Dots -->
+<div class="song-counter">
+  <div class="dot active" id="dot0"></div>
+  <div class="dot"        id="dot1"></div>
+</div>
+
 <div class="bottom">
-  <div class="song-title">Faded</div>
+  <div class="song-title"  id="songTitle">Faded</div>
   <div class="song-row">
     <div class="avatar">T</div>
     <div class="song-artist">Tushar Singla</div>
@@ -119,13 +131,19 @@
   </div>
   <div class="prog-times">
     <span id="cur">00:00</span>
-    <span id="dur">03:38</span>
+    <span id="dur">--:--</span>
   </div>
 
   <div class="controls">
-    <button class="btn-skip" onclick="skip(-10)">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><polygon points="19,20 9,12 19,4"/><line x1="5" y1="4" x2="5" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <!-- Prev song -->
+    <button class="btn-ctrl" onclick="changeSong(-1)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
+    <!-- Skip back 10s -->
+    <button class="btn-ctrl" onclick="skip(-10)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="19,20 9,12 19,4"/><line x1="5" y1="4" x2="5" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <!-- Play/Pause -->
     <button class="btn-play" onclick="togglePlay()">
       <svg id="ico-play" width="28" height="28" viewBox="0 0 24 24" fill="#111"><polygon points="7,3 21,12 7,21"/></svg>
       <svg id="ico-pause" width="28" height="28" viewBox="0 0 24 24" fill="#111" style="display:none">
@@ -133,18 +151,40 @@
         <rect x="15" y="3" width="4" height="18" rx="1"/>
       </svg>
     </button>
-    <button class="btn-skip" onclick="skip(10)">
-      <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><polygon points="5,4 15,12 5,20"/><line x1="19" y1="4" x2="19" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+    <!-- Skip forward 10s -->
+    <button class="btn-ctrl" onclick="skip(10)">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="5,4 15,12 5,20"/><line x1="19" y1="4" x2="19" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <!-- Next song -->
+    <button class="btn-ctrl" onclick="changeSong(1)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><polyline points="9 18 15 12 9 6"/></svg>
     </button>
   </div>
 </div>
 
-<audio id="audio"
-  src="https://raw.githubusercontent.com/tusharchd29/tushar/main/faded.mp3"
-  preload="auto"></audio>
+<audio id="audio" preload="auto"></audio>
 
 <script>
+const songs = [
+  {
+    title:  'Faded',
+    artist: 'Tushar Singla',
+    src:    'https://raw.githubusercontent.com/tusharchd29/tushar/main/faded.mp3',
+    bg:     'https://raw.githubusercontent.com/tusharchd29/tushar/main/bg.png',
+  },
+  {
+    title:  'Dear Future Me',
+    artist: 'Tushar Singla',
+    src:    'https://raw.githubusercontent.com/tusharchd29/tushar/main/dear-future-me.mp3',
+    bg:     'https://raw.githubusercontent.com/tusharchd29/tushar/main/bg2.png',
+  },
+];
+
+let current = 0;
+
 const audio     = document.getElementById('audio');
+const bgImg     = document.getElementById('bgImg');
+const bgWrap    = document.getElementById('bgWrap');
 const seekFill  = document.getElementById('seekFill');
 const seekThumb = document.getElementById('seekThumb');
 const curEl     = document.getElementById('cur');
@@ -152,41 +192,82 @@ const durEl     = document.getElementById('dur');
 const iPlay     = document.getElementById('ico-play');
 const iPause    = document.getElementById('ico-pause');
 
-function fmt(s) { s=Math.max(0,s||0); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0'); }
-function setBar(f,th,pct) { f.style.width=pct+'%'; th.style.left=pct+'%'; }
+function fmt(s) {
+  s = Math.max(0, s||0);
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(Math.floor(s%60)).padStart(2,'0');
+}
+function setBar(f, th, pct) { f.style.width=pct+'%'; th.style.left=pct+'%'; }
 
-audio.addEventListener('loadedmetadata', () => durEl.textContent=fmt(audio.duration));
+function loadSong(idx, autoplay) {
+  const s = songs[idx];
+  // Fade bg
+  bgWrap.classList.add('fade-out');
+  setTimeout(() => {
+    bgImg.src = s.bg;
+    bgWrap.classList.remove('fade-out');
+  }, 300);
+
+  document.getElementById('songTitle').textContent = s.title;
+  audio.src = s.src;
+  audio.load();
+  setBar(seekFill, seekThumb, 0);
+  curEl.textContent = '00:00';
+  durEl.textContent = '--:--';
+
+  // Update dots
+  songs.forEach((_, i) => {
+    document.getElementById('dot' + i).classList.toggle('active', i === idx);
+  });
+
+  if (autoplay) {
+    audio.play();
+    iPlay.style.display='none'; iPause.style.display='';
+  } else {
+    iPlay.style.display=''; iPause.style.display='none';
+  }
+}
+
+function changeSong(dir) {
+  const wasPlaying = !audio.paused;
+  current = (current + dir + songs.length) % songs.length;
+  loadSong(current, wasPlaying);
+}
+
+audio.addEventListener('loadedmetadata', () => durEl.textContent = fmt(audio.duration));
 audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
-  setBar(seekFill, seekThumb, (audio.currentTime/audio.duration)*100);
+  setBar(seekFill, seekThumb, (audio.currentTime / audio.duration) * 100);
   curEl.textContent = fmt(audio.currentTime);
 });
 audio.addEventListener('ended', () => {
-  iPlay.style.display=''; iPause.style.display='none';
-  setBar(seekFill,seekThumb,0); curEl.textContent='00:00';
+  // Auto advance to next song
+  changeSong(1);
 });
 
 function togglePlay() {
   if (audio.paused) { audio.play(); iPlay.style.display='none'; iPause.style.display=''; }
   else              { audio.pause(); iPlay.style.display=''; iPause.style.display='none'; }
 }
-function skip(s) { audio.currentTime=Math.max(0,Math.min(audio.duration||0,audio.currentTime+s)); }
+function skip(s) { audio.currentTime = Math.max(0, Math.min(audio.duration||0, audio.currentTime+s)); }
 
-function makeDraggable(el,cb) {
-  const getX=e=>e.touches?e.touches[0].clientX:e.clientX;
-  const calc=e=>{const r=el.getBoundingClientRect();return Math.max(0,Math.min(1,(getX(e)-r.left)/r.width));};
-  let on=false;
-  el.addEventListener('mousedown', e=>{on=true;cb(calc(e));e.preventDefault();});
-  el.addEventListener('touchstart',e=>{on=true;cb(calc(e));},{passive:true});
-  document.addEventListener('mousemove',e=>{if(on){cb(calc(e));e.preventDefault();}},{passive:false});
-  document.addEventListener('touchmove',e=>{if(on){cb(calc(e));e.preventDefault();}},{passive:false});
-  document.addEventListener('mouseup', ()=>on=false);
-  document.addEventListener('touchend',()=>on=false);
+function makeDraggable(el, cb) {
+  const getX = e => e.touches ? e.touches[0].clientX : e.clientX;
+  const calc = e => { const r=el.getBoundingClientRect(); return Math.max(0,Math.min(1,(getX(e)-r.left)/r.width)); };
+  let on = false;
+  el.addEventListener('mousedown',  e => { on=true; cb(calc(e)); e.preventDefault(); });
+  el.addEventListener('touchstart', e => { on=true; cb(calc(e)); }, {passive:true});
+  document.addEventListener('mousemove', e => { if(on){ cb(calc(e)); e.preventDefault(); } }, {passive:false});
+  document.addEventListener('touchmove', e => { if(on){ cb(calc(e)); e.preventDefault(); } }, {passive:false});
+  document.addEventListener('mouseup',  () => on=false);
+  document.addEventListener('touchend', () => on=false);
 }
 
-makeDraggable(document.getElementById('seekTrack'),p=>{
-  if(audio.duration){audio.currentTime=p*audio.duration;setBar(seekFill,seekThumb,p*100);}
+makeDraggable(document.getElementById('seekTrack'), p => {
+  if (audio.duration) { audio.currentTime=p*audio.duration; setBar(seekFill,seekThumb,p*100); }
 });
+
+// Load first song
+loadSong(0, false);
 </script>
 </body>
 </html>
