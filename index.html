@@ -9,7 +9,6 @@
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; font-family:'Inter',sans-serif; background:#000; }
 
-    /* ── Exact background image ── */
     .bg {
       position:fixed; inset:0; z-index:0;
       background: url('https://raw.githubusercontent.com/tusharchd29/tushar/main/bg.png') center center / cover no-repeat;
@@ -25,79 +24,28 @@
       );
     }
 
-    /* ── Side actions (right side like reference) ── */
-    .side-actions {
-      position:fixed; right:14px; top:50%; transform:translateY(-50%);
-      z-index:20;
-      display:flex; flex-direction:column; align-items:center; gap:22px;
-    }
-    .action-btn {
-      display:flex; flex-direction:column; align-items:center; gap:4px;
-      background:none; border:none; cursor:pointer;
-      color:#fff; -webkit-tap-highlight-color:transparent;
-    }
-    .action-icon {
-      width:46px; height:46px; border-radius:50%;
-      background:rgba(255,255,255,0.15);
-      backdrop-filter:blur(8px);
-      display:flex; align-items:center; justify-content:center;
-      transition:transform 0.15s;
-    }
-    .action-btn:active .action-icon { transform:scale(0.9); }
-    .action-label { font-size:10px; color:rgba(255,255,255,0.7); font-weight:500; letter-spacing:0.04em; }
-    .action-count { font-size:11px; color:#fff; font-weight:600; }
-
-    /* ── Bottom panel ── */
+    /* Bottom panel */
     .bottom {
       position:fixed; bottom:0; left:0; right:0; z-index:10;
-      padding:0 20px 32px;
+      padding:0 24px 36px;
     }
 
-    /* Song info row */
-    .song-row {
-      display:flex; align-items:center; gap:10px;
-      margin-bottom:6px;
-    }
+    .song-title  { font-size:28px; font-weight:700; color:#fff; letter-spacing:-0.5px; margin-bottom:5px; }
+    .song-row    { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
     .avatar {
-      width:32px; height:32px; border-radius:50%;
+      width:30px; height:30px; border-radius:50%;
       background:linear-gradient(135deg,#ff6b6b,#ffa500);
       display:flex; align-items:center; justify-content:center;
-      font-size:13px; font-weight:700; color:#fff; flex-shrink:0;
+      font-size:12px; font-weight:700; color:#fff; flex-shrink:0;
     }
-    .song-title  { font-size:26px; font-weight:700; color:#fff; letter-spacing:-0.5px; margin-bottom:4px; }
-    .song-artist { font-size:13px; color:rgba(255,255,255,0.8); }
+    .song-artist { font-size:14px; color:rgba(255,255,255,0.75); }
 
-    /* ── Karaoke lyrics ── */
-    .karaoke-wrap {
-      margin-bottom:14px;
-      min-height:60px;
-      display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
-      gap:2px;
-    }
-    .k-line {
-      font-size:16px; font-weight:600; line-height:1.6;
-      color:rgba(255,255,255,0.35);
-      transition:all 0.4s ease;
-      text-shadow:0 1px 8px rgba(0,0,0,0.5);
-    }
-    .k-line.active {
-      font-size:19px;
-      font-weight:700;
-      color:#fff;
-      text-shadow:0 0 20px rgba(255,255,255,0.6), 0 2px 8px rgba(0,0,0,0.8);
-    }
-    .k-line.prev {
-      font-size:14px;
-      color:rgba(255,255,255,0.4);
-    }
-
-    /* Progress bar */
+    /* Progress */
     .prog-track {
       width:100%; height:3px;
       background:rgba(255,255,255,0.25);
       border-radius:99px; position:relative;
-      cursor:pointer; touch-action:none;
-      margin-bottom:6px;
+      cursor:pointer; touch-action:none; margin-bottom:6px;
     }
     .prog-fill {
       height:100%; width:0%;
@@ -105,21 +53,20 @@
       border-radius:99px; pointer-events:none;
     }
     .prog-thumb {
-      width:12px; height:12px; border-radius:50%; background:#fff;
+      width:13px; height:13px; border-radius:50%; background:#fff;
       position:absolute; top:50%; transform:translate(-50%,-50%);
       left:0%; pointer-events:none;
       box-shadow:0 0 6px rgba(255,255,255,0.8);
     }
     .prog-times {
       display:flex; justify-content:space-between;
-      font-size:11px; color:rgba(255,255,255,0.5);
-      margin-bottom:14px;
+      font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:18px;
     }
 
     /* Controls */
     .controls {
       display:flex; align-items:center; justify-content:center;
-      gap:36px; margin-bottom:14px;
+      gap:36px; margin-bottom:18px;
     }
     .btn-skip {
       background:none; border:none; cursor:pointer;
@@ -128,16 +75,16 @@
     }
     .btn-skip:active { opacity:0.5; }
     .btn-play {
-      width:68px; height:68px; border-radius:50%; border:none;
+      width:70px; height:70px; border-radius:50%; border:none;
       background:#fff; cursor:pointer;
       display:flex; align-items:center; justify-content:center;
-      box-shadow:0 4px 20px rgba(0,0,0,0.4);
+      box-shadow:0 4px 24px rgba(0,0,0,0.5);
       transition:transform 0.12s;
       -webkit-tap-highlight-color:transparent;
     }
     .btn-play:active { transform:scale(0.9); }
 
-    /* Volume row */
+    /* Volume */
     .vol-row { display:flex; align-items:center; gap:10px; }
     .vol-icon { font-size:13px; color:rgba(255,255,255,0.4); }
   </style>
@@ -147,52 +94,13 @@
 <div class="bg"></div>
 <div class="bg-overlay"></div>
 
-<!-- Side actions -->
-<div class="side-actions">
-  <button class="action-btn" onclick="toggleLike(this)">
-    <div class="action-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3H14z"/><path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-    </div>
-    <div class="action-count" id="likeCount">1</div>
-    <div class="action-label">LIKE</div>
-  </button>
-  <button class="action-btn">
-    <div class="action-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M10 15V19a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3H10z"/><path d="M17 2h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17" fill="none" stroke="currentColor" stroke-width="2"/></svg>
-    </div>
-    <div class="action-label">DISLIKE</div>
-  </button>
-  <button class="action-btn">
-    <div class="action-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-    </div>
-    <div class="action-count">0</div>
-    <div class="action-label">COMMENT</div>
-  </button>
-  <button class="action-btn" onclick="shareLink()">
-    <div class="action-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-    </div>
-    <div class="action-label">SHARE</div>
-  </button>
-</div>
-
-<!-- Bottom panel -->
 <div class="bottom">
-
   <div class="song-title">Faded</div>
   <div class="song-row">
     <div class="avatar">T</div>
     <div class="song-artist">Tushar Singla</div>
   </div>
 
-  <!-- Karaoke lyrics: prev + active only -->
-  <div class="karaoke-wrap">
-    <div class="k-line prev"  id="kPrev"></div>
-    <div class="k-line active" id="kActive">♪</div>
-  </div>
-
-  <!-- Progress -->
   <div class="prog-track" id="seekTrack">
     <div class="prog-fill"  id="seekFill"></div>
     <div class="prog-thumb" id="seekThumb"></div>
@@ -202,7 +110,6 @@
     <span id="dur">03:38</span>
   </div>
 
-  <!-- Controls -->
   <div class="controls">
     <button class="btn-skip" onclick="skip(-10)">
       <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><polygon points="19,20 9,12 19,4"/><line x1="5" y1="4" x2="5" y2="20" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -219,7 +126,6 @@
     </button>
   </div>
 
-  <!-- Volume -->
   <div class="vol-row">
     <span class="vol-icon">🔈</span>
     <div class="prog-track" id="volTrack" style="flex:1;margin-bottom:0">
@@ -228,7 +134,6 @@
     </div>
     <span class="vol-icon">🔊</span>
   </div>
-
 </div>
 
 <audio id="audio"
@@ -236,62 +141,6 @@
   preload="auto"></audio>
 
 <script>
-// Lyrics — shown 2 at a time (prev dimmed, active bright)
-const lyrics = [
-  { t:   0, text: "♪" },
-  { t:  16, text: "The city sleeps," },
-  { t:  19, text: "but I'm still wide awake." },
-  { t:  24, text: "Your shadow moves" },
-  { t:  27, text: "through every thought I make." },
-  { t:  31, text: "We were dancing under quiet skies." },
-  { t:  36, text: "Fingers touched but hearts were blind." },
-  { t:  40, text: "You said forever in your eyes, but" },
-  { t:  44, text: "forever's just another lie." },
-  { t:  50, text: "And I still hear your voice inside the" },
-  { t:  54, text: "rain," },
-  { t:  57, text: "calling me softly by my name." },
-  { t:  64, text: "In these fading lights," },
-  { t:  68, text: "you're still in my mind" },
-  { t:  72, text: "like a ghost I can't erase in time." },
-  { t:  80, text: "I keep reaching out," },
-  { t:  84, text: "but you're not around." },
-  { t:  88, text: "Just the echo of your love. So loud." },
-  { t: 108, text: "The air still smells like your perfume" },
-  { t: 113, text: "in this room that feels like doom. Every" },
-  { t: 117, text: "song brings me to you." },
-  { t: 121, text: "Every silence cuts me through." },
-  { t: 127, text: "And I still hear your voice inside the" },
-  { t: 131, text: "rain," },
-  { t: 134, text: "calling me softly once again." },
-  { t: 141, text: "In these fading lights," },
-  { t: 145, text: "you're still in my mind." },
-  { t: 149, text: "Like a ghost I can erase inside." },
-  { t: 157, text: "Keep reaching out," },
-  { t: 161, text: "but you're not around." },
-  { t: 165, text: "Just the echo of your love. So" },
-  { t: 175, text: "maybe love's not meant to stay." },
-  { t: 179, text: "Maybe it just fades away." },
-  { t: 183, text: "Like a dream that ends at dawn. Till I" },
-  { t: 187, text: "wait though you're gone." },
-  { t: 197, text: "The city sleeps," },
-  { t: 200, text: "the night remains." },
-  { t: 204, text: "And I'm lost inside your name." },
-];
-
-const kPrev   = document.getElementById('kPrev');
-const kActive = document.getElementById('kActive');
-let lastIdx   = -1;
-
-function updateLyrics(t) {
-  let idx = 0;
-  for (let i = 0; i < lyrics.length; i++) { if (t >= lyrics[i].t) idx = i; else break; }
-  if (idx === lastIdx) return;
-  lastIdx = idx;
-  kActive.textContent = lyrics[idx].text;
-  kPrev.textContent   = idx > 0 ? lyrics[idx - 1].text : '';
-}
-
-// Audio
 const audio     = document.getElementById('audio');
 const seekFill  = document.getElementById('seekFill');
 const seekThumb = document.getElementById('seekThumb');
@@ -303,70 +152,44 @@ const iPlay     = document.getElementById('ico-play');
 const iPause    = document.getElementById('ico-pause');
 audio.volume    = 0.9;
 
-function fmt(s) {
-  s = Math.max(0, s || 0);
-  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(Math.floor(s%60)).padStart(2,'0');
-}
-function setBar(f, th, pct) { f.style.width = pct+'%'; th.style.left = pct+'%'; }
+function fmt(s) { s=Math.max(0,s||0); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0'); }
+function setBar(f,th,pct) { f.style.width=pct+'%'; th.style.left=pct+'%'; }
 
-audio.addEventListener('loadedmetadata', () => durEl.textContent = fmt(audio.duration));
+audio.addEventListener('loadedmetadata', () => durEl.textContent=fmt(audio.duration));
 audio.addEventListener('timeupdate', () => {
   if (!audio.duration) return;
-  setBar(seekFill, seekThumb, (audio.currentTime / audio.duration) * 100);
-  curEl.textContent = fmt(audio.currentTime);
-  updateLyrics(audio.currentTime);
+  setBar(seekFill,seekThumb,(audio.currentTime/audio.duration)*100);
+  curEl.textContent=fmt(audio.currentTime);
 });
 audio.addEventListener('ended', () => {
   iPlay.style.display=''; iPause.style.display='none';
-  setBar(seekFill, seekThumb, 0); curEl.textContent='00:00';
-  lastIdx=-1; kActive.textContent='♪'; kPrev.textContent='';
+  setBar(seekFill,seekThumb,0); curEl.textContent='00:00';
 });
 
 function togglePlay() {
-  if (audio.paused) {
-    audio.play();
-    iPlay.style.display='none'; iPause.style.display='';
-  } else {
-    audio.pause();
-    iPlay.style.display=''; iPause.style.display='none';
-  }
+  if (audio.paused) { audio.play(); iPlay.style.display='none'; iPause.style.display=''; }
+  else              { audio.pause(); iPlay.style.display=''; iPause.style.display='none'; }
 }
 
-function skip(s) {
-  audio.currentTime = Math.max(0, Math.min(audio.duration||0, audio.currentTime+s));
+function skip(s) { audio.currentTime=Math.max(0,Math.min(audio.duration||0,audio.currentTime+s)); }
+
+function makeDraggable(el,cb) {
+  const getX=e=>e.touches?e.touches[0].clientX:e.clientX;
+  const calc=e=>{const r=el.getBoundingClientRect();return Math.max(0,Math.min(1,(getX(e)-r.left)/r.width));};
+  let on=false;
+  el.addEventListener('mousedown', e=>{on=true;cb(calc(e));e.preventDefault();});
+  el.addEventListener('touchstart',e=>{on=true;cb(calc(e));},{passive:true});
+  document.addEventListener('mousemove',e=>{if(on){cb(calc(e));e.preventDefault();}},{passive:false});
+  document.addEventListener('touchmove',e=>{if(on){cb(calc(e));e.preventDefault();}},{passive:false});
+  document.addEventListener('mouseup', ()=>on=false);
+  document.addEventListener('touchend',()=>on=false);
 }
 
-let liked = false;
-function toggleLike(btn) {
-  liked = !liked;
-  const icon = btn.querySelector('.action-icon');
-  const count = btn.querySelector('.action-count');
-  icon.style.background = liked ? 'rgba(123,90,245,0.7)' : 'rgba(255,255,255,0.15)';
-  count.textContent = liked ? '2' : '1';
-}
-
-function shareLink() {
-  if (navigator.share) navigator.share({ title: 'Faded by Tushar', url: location.href });
-  else { navigator.clipboard.writeText(location.href); alert('Link copied!'); }
-}
-
-function makeDraggable(el, cb) {
-  const getX = e => e.touches ? e.touches[0].clientX : e.clientX;
-  const calc = e => { const r = el.getBoundingClientRect(); return Math.max(0,Math.min(1,(getX(e)-r.left)/r.width)); };
-  let on = false;
-  el.addEventListener('mousedown',  e => { on=true; cb(calc(e)); e.preventDefault(); });
-  el.addEventListener('touchstart', e => { on=true; cb(calc(e)); }, {passive:true});
-  document.addEventListener('mousemove', e => { if(on){cb(calc(e));e.preventDefault();} }, {passive:false});
-  document.addEventListener('touchmove', e => { if(on){cb(calc(e));e.preventDefault();} }, {passive:false});
-  document.addEventListener('mouseup',  ()=>on=false);
-  document.addEventListener('touchend', ()=>on=false);
-}
-
-makeDraggable(document.getElementById('seekTrack'), p => {
-  if (audio.duration) { audio.currentTime=p*audio.duration; setBar(seekFill,seekThumb,p*100); updateLyrics(p*audio.duration); }
+makeDraggable(document.getElementById('seekTrack'),p=>{
+  if(audio.duration){audio.currentTime=p*audio.duration;setBar(seekFill,seekThumb,p*100);}
 });
-makeDraggable(document.getElementById('volTrack'), p => {
-  audio.volume=p; setBar(volFill,volThumb,p*100);
+makeDraggable(document.getElementById('volTrack'),p=>{
+  audio.volume=p;setBar(volFill,volThumb,p*100);
 });
 </script>
 </body>
