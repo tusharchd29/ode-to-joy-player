@@ -72,8 +72,8 @@
 <body>
 <div class="card">
   <span class="note-icon">🎵</span>
-  <h1>Ode to Joy</h1>
-  <p>Ludwig van Beethoven · Public Domain</p>
+  <h1>Faded</h1>
+  <p>Alan Walker · 2015</p>
 
   <button class="btn-play" id="btn" onclick="togglePlay()">
     <svg id="ico-play" width="28" height="28" viewBox="0 0 24 24" fill="white"><polygon points="6,3 20,12 6,21"/></svg>
@@ -91,173 +91,53 @@
   <div class="status" id="status">Click play to start</div>
 </div>
 
+<audio id="audio" src="https://raw.githubusercontent.com/tusharchd29/ode-to-joy-player/main/faded.mp3" preload="auto"></audio>
+
 <script>
-// ── Web Audio API music engine ──────────────────────────────
-let ctx, masterGain, isPlaying = false;
-let startTime = 0, pausedAt = 0;
-let scheduledNodes = [];
-let rafId = null;
+  const audio  = document.getElementById('audio');
+  const fill   = document.getElementById('barFill');
+  const curEl  = document.getElementById('cur');
+  const durEl  = document.getElementById('dur');
+  const status = document.getElementById('status');
+  const iPlay  = document.getElementById('ico-play');
+  const iPause = document.getElementById('ico-pause');
 
-const BPM = 108;
-const beat = 60 / BPM;
-const totalDuration = beat * 64; // approx 28 seconds
-
-// Ode to Joy full melody (note, beats)
-const melody = [
-  ['E4',1],['E4',1],['F4',1],['G4',1],
-  ['G4',1],['F4',1],['E4',1],['D4',1],
-  ['C4',1],['C4',1],['D4',1],['E4',1],
-  ['E4',1.5],['D4',0.5],['D4',2],
-
-  ['E4',1],['E4',1],['F4',1],['G4',1],
-  ['G4',1],['F4',1],['E4',1],['D4',1],
-  ['C4',1],['C4',1],['D4',1],['E4',1],
-  ['D4',1.5],['C4',0.5],['C4',2],
-
-  ['D4',1],['D4',1],['E4',1],['C4',1],
-  ['D4',1],['E4',0.5],['F4',0.5],['E4',1],['C4',1],
-  ['D4',1],['E4',0.5],['F4',0.5],['E4',1],['D4',1],
-  ['C4',1],['D4',1],['G4',2],
-
-  ['E4',1],['E4',1],['F4',1],['G4',1],
-  ['G4',1],['F4',1],['E4',1],['D4',1],
-  ['C4',1],['C4',1],['D4',1],['E4',1],
-  ['D4',1.5],['C4',0.5],['C4',2],
-];
-
-const noteFreq = {
-  C4:261.63, D4:293.66, E4:329.63, F4:349.23,
-  G4:392.00, A4:440.00, B4:493.88, C5:523.25
-};
-
-function fmt(s) {
-  s = Math.max(0, s);
-  return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
-}
-
-function playNote(freq, startAt, duration) {
-  const osc  = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  // Add harmonics via two oscillators
-  const osc2 = ctx.createOscillator();
-  const g2   = ctx.createGain();
-
-  osc.type  = 'triangle';
-  osc.frequency.value = freq;
-  osc2.type = 'sine';
-  osc2.frequency.value = freq * 2;
-
-  g2.gain.value = 0.18;
-
-  const attack  = 0.015;
-  const release = Math.min(duration * 0.35, 0.18);
-  const sustain = duration - attack - release;
-
-  gain.gain.setValueAtTime(0, startAt);
-  gain.gain.linearRampToValueAtTime(0.55, startAt + attack);
-  gain.gain.setValueAtTime(0.55, startAt + attack + sustain);
-  gain.gain.linearRampToValueAtTime(0, startAt + duration);
-
-  osc.connect(gain);
-  osc2.connect(g2);
-  g2.connect(gain);
-  gain.connect(masterGain);
-
-  osc.start(startAt);  osc.stop(startAt + duration);
-  osc2.start(startAt); osc2.stop(startAt + duration);
-
-  scheduledNodes.push(osc, osc2);
-}
-
-function scheduleAll(offset) {
-  let t = ctx.currentTime + 0.05;
-  startTime = t - offset;
-
-  for (const [note, beats] of melody) {
-    const dur = beats * beat;
-    const freq = noteFreq[note];
-    if (freq) playNote(freq, t, dur * 0.92);
-    t += dur;
-  }
-}
-
-function stopAll() {
-  scheduledNodes.forEach(n => { try { n.stop(); } catch(e){} });
-  scheduledNodes = [];
-}
-
-function updateBar() {
-  if (!isPlaying) return;
-  const elapsed = ctx.currentTime - startTime;
-  const pct = Math.min(elapsed / totalDuration * 100, 100);
-  document.getElementById('barFill').style.width = pct + '%';
-  document.getElementById('cur').textContent = fmt(elapsed);
-
-  if (elapsed >= totalDuration) {
-    isPlaying = false;
-    pausedAt = 0;
-    document.getElementById('ico-play').style.display = '';
-    document.getElementById('ico-pause').style.display = 'none';
-    document.getElementById('status').textContent = 'Finished';
-    document.getElementById('status').className = 'status';
-    document.getElementById('barFill').style.width = '0%';
-    document.getElementById('cur').textContent = '0:00';
-    return;
-  }
-  rafId = requestAnimationFrame(updateBar);
-}
-
-function togglePlay() {
-  if (!ctx) {
-    ctx = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = ctx.createGain();
-    masterGain.gain.value = 0.9;
-    masterGain.connect(ctx.destination);
-    document.getElementById('dur').textContent = fmt(totalDuration);
+  function fmt(s) {
+    return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
   }
 
-  if (ctx.state === 'suspended') ctx.resume();
+  audio.addEventListener('loadedmetadata', () => durEl.textContent = fmt(audio.duration));
 
-  if (!isPlaying) {
-    // PLAY
-    scheduleAll(pausedAt);
-    isPlaying = true;
-    document.getElementById('ico-play').style.display = 'none';
-    document.getElementById('ico-pause').style.display = '';
-    document.getElementById('status').textContent = '▶ Now playing…';
-    document.getElementById('status').className = 'status playing';
-    rafId = requestAnimationFrame(updateBar);
-  } else {
-    // PAUSE
-    pausedAt = ctx.currentTime - startTime;
-    stopAll();
-    cancelAnimationFrame(rafId);
-    isPlaying = false;
-    document.getElementById('ico-play').style.display = '';
-    document.getElementById('ico-pause').style.display = 'none';
-    document.getElementById('status').textContent = 'Paused';
-    document.getElementById('status').className = 'status';
-  }
-}
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      fill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+      curEl.textContent = fmt(audio.currentTime);
+    }
+  });
 
-function seek(e) {
-  if (!ctx) return;
-  const r = e.currentTarget.getBoundingClientRect();
-  const pct = (e.clientX - r.left) / r.width;
-  const newTime = pct * totalDuration;
-  if (isPlaying) {
-    stopAll();
-    cancelAnimationFrame(rafId);
-    pausedAt = newTime;
-    scheduleAll(pausedAt);
-    rafId = requestAnimationFrame(updateBar);
-  } else {
-    pausedAt = newTime;
-    document.getElementById('barFill').style.width = (pct * 100) + '%';
-    document.getElementById('cur').textContent = fmt(newTime);
+  audio.addEventListener('ended', () => {
+    iPlay.style.display = ''; iPause.style.display = 'none';
+    status.textContent = 'Finished'; status.className = 'status';
+    fill.style.width = '0%'; curEl.textContent = '0:00';
+  });
+
+  function togglePlay() {
+    if (audio.paused) {
+      audio.play();
+      iPlay.style.display = 'none'; iPause.style.display = '';
+      status.textContent = '▶ Now playing…'; status.className = 'status playing';
+    } else {
+      audio.pause();
+      iPlay.style.display = ''; iPause.style.display = 'none';
+      status.textContent = 'Paused'; status.className = 'status';
+    }
   }
-}
+
+  function seek(e) {
+    if (!audio.duration) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    audio.currentTime = ((e.clientX - r.left) / r.width) * audio.duration;
+  }
 </script>
 </body>
 </html>
